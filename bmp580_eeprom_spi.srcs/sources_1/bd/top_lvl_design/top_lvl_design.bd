@@ -1,0 +1,162 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0xDBB1F3A5CE54B509",
+      "device": "xc7s25csga324-1",
+      "gen_directory": "../../../../bmp580_eeprom_spi.gen/sources_1/bd/top_lvl_design",
+      "name": "top_lvl_design",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2025.2",
+      "validated": "true"
+    },
+    "design_tree": {
+      "led_control_0": "",
+      "switch_control_0": ""
+    },
+    "ports": {
+      "SW3": {
+        "direction": "I"
+      },
+      "CLK100MHZ": {
+        "type": "clk",
+        "direction": "I",
+        "parameters": {
+          "CLK_DOMAIN": {
+            "value": "top_lvl_design_CLK100MHZ",
+            "value_src": "default"
+          },
+          "FREQ_HZ": {
+            "value": "100000000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default"
+          }
+        }
+      },
+      "LD2": {
+        "direction": "O"
+      }
+    },
+    "components": {
+      "led_control_0": {
+        "vlnv": "xilinx.com:module_ref:led_control:1.0",
+        "ip_revision": "1",
+        "xci_name": "top_lvl_design_led_control_0_0",
+        "xci_path": "ip\\top_lvl_design_led_control_0_0\\top_lvl_design_led_control_0_0.xci",
+        "inst_hier_path": "led_control_0",
+        "has_run_ip_tcl": "true",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "led_control",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "clk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "user_prop"
+              },
+              "CLK_DOMAIN": {
+                "value": "top_lvl_design_CLK100MHZ",
+                "value_src": "default_prop"
+              }
+            }
+          },
+          "rst_l": {
+            "direction": "I"
+          },
+          "start": {
+            "direction": "I"
+          },
+          "led_ctrl": {
+            "direction": "O"
+          }
+        }
+      },
+      "switch_control_0": {
+        "vlnv": "xilinx.com:module_ref:switch_control:1.0",
+        "ip_revision": "1",
+        "xci_name": "top_lvl_design_switch_control_0_1",
+        "xci_path": "ip\\top_lvl_design_switch_control_0_1\\top_lvl_design_switch_control_0_1.xci",
+        "inst_hier_path": "switch_control_0",
+        "has_run_ip_tcl": "true",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "switch_control",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "clk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "user_prop"
+              },
+              "CLK_DOMAIN": {
+                "value": "top_lvl_design_CLK100MHZ",
+                "value_src": "default_prop"
+              }
+            }
+          },
+          "switch_input": {
+            "direction": "I"
+          },
+          "rst_l": {
+            "direction": "O"
+          },
+          "start": {
+            "direction": "O"
+          }
+        }
+      }
+    },
+    "nets": {
+      "CLK100MHZ_1": {
+        "ports": [
+          "CLK100MHZ",
+          "switch_control_0/clk",
+          "led_control_0/clk"
+        ]
+      },
+      "SW3_1": {
+        "ports": [
+          "SW3",
+          "switch_control_0/switch_input"
+        ]
+      },
+      "led_control_0_led_ctrl": {
+        "ports": [
+          "led_control_0/led_ctrl",
+          "LD2"
+        ]
+      },
+      "switch_control_0_rst_l": {
+        "ports": [
+          "switch_control_0/rst_l",
+          "led_control_0/rst_l"
+        ]
+      },
+      "switch_control_0_start": {
+        "ports": [
+          "switch_control_0/start",
+          "led_control_0/start"
+        ]
+      }
+    }
+  }
+}
