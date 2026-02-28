@@ -29,7 +29,7 @@ architecture rtl of bmp580_control is
     constant READ_DATA         : std_logic_vector(7 downto 0) := x"80";
     constant CHIP_ID_ADDR      : std_logic_vector(7 downto 0) := x"01"; -- reset value: x"50"
     constant STATUS_ADDR       : std_logic_vector(7 downto 0) := x"28"; -- reset value: x"02"
-    constant INT_STATUS        : std_logic_vector(7 downto 0) := x"28"; -- reset value: x"00"
+    constant INT_STATUS        : std_logic_vector(7 downto 0) := x"27"; -- reset value: x"00"
     constant INIT_DELAY_CYCLES : integer := 200000; -- 2 ms @ 100 MHz
 
     type rx_wait_ctx_t is (
@@ -60,11 +60,11 @@ architecture rtl of bmp580_control is
         --      b) Read out the STATUS register and check that status_nvm == 1, status_nvm_err == 0;
         READ_SEND_STATUS_ADDR,
         READ_SEND_STATUS_DUMMY,
-        READ_WAIT_STATUS_DATA_RX
-        --      c) Read out the INT_STATUS.por register field and check that it is set to 1; that means INT_STATUS == 0x01
-        -- READ_SEND_INT_STATUS_ADDR,
-        -- READ_SEND_INT_STATUS_DUMMY,
-        -- READ_WAIT_INT_STATUS_DATA_RX
+        READ_WAIT_STATUS_DATA_RX,
+        --      c) Read out the INT_STATUS.por register field and check that it is set to 1; that means INT_STATUS == 0x10
+        READ_SEND_INT_STATUS_ADDR,
+        READ_SEND_INT_STATUS_DUMMY,
+        READ_WAIT_INT_STATUS_DATA_RX
 
         -- 4. Set mode to STANDBY - some registers cannot be changed in other modes - doc. 4.3.7 and 4.3.8
     );
@@ -117,12 +117,19 @@ begin
                             case rx_wait_ctx is
                                 when INIT_WAIT_DUMMY1_RX =>
                                     state <= INIT_SEND_DUMMY2;
+
                                 when INIT_WAIT_DUMMY2_RX =>
                                     state <= READ_SEND_CHIP_ID_ADDR;
+
                                 when READ_WAIT_CHIP_ID_ADDR_RX =>
                                     state <= READ_SEND_CHIP_ID_DUMMY;
+
                                 when READ_WAIT_STATUS_ADDR_RX =>
                                     state <= READ_SEND_STATUS_DUMMY;
+
+                                when READ_WAIT_INT_STATUS_ADDR_RX =>
+                                    state <= READ_SEND_INT_STATUS_DUMMY;
+
                                 when OTHERS =>
                                     state <= IDLE;
                             end case;
@@ -201,11 +208,37 @@ begin
                     when READ_WAIT_STATUS_DATA_RX =>
                         if rx_data_valid = '1' then
                             if rx_byte(2 downto 1) = "01" then
-                                spi_ready_reg <= '1'; -- delete
+                                state <= READ_SEND_INT_STATUS_ADDR;
                             else
-                                spi_ready_reg <= '0'; -- delete
+                                state <= IDLE;
                             end if;
                         end if;
+                    
+                    -- 2.c
+                    when READ_SEND_INT_STATUS_ADDR =>
+                        if tx_ready = '1' then
+                            tx_count_reg      <= x"02";
+                            tx_byte_reg       <= INT_STATUS or READ_DATA;
+                            tx_data_valid_reg <= '1';
+                            rx_wait_ctx       <= READ_WAIT_INT_STATUS_ADDR_RX;
+                            state             <= WAIT_RX;
+                        end if;
+                    
+                    when READ_SEND_INT_STATUS_DUMMY =>
+                        if tx_ready = '1' then
+                            tx_byte_reg       <= DUMMY_BYTE;
+                            tx_data_valid_reg <= '1';
+                            state             <= READ_WAIT_INT_STATUS_DATA_RX;
+                        end if;
+                    
+                    when READ_WAIT_INT_STATUS_DATA_RX =>
+                        if rx_data_valid = '1' then
+                            if rx_byte = x"10" then
+                                spi_ready_reg <= '1';
+                            else
+                                spi_ready_reg <= '0';
+                            end if;
+                        end if; 
 
                     when OTHERS =>
                         tx_count_reg        <= (others => '0');
