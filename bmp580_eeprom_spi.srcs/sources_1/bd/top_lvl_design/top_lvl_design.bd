@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0xDBB1F3A5CE54B509",
+      "boundary_crc": "0x74AD8356A63392F8",
       "device": "xc7s25csga324-1",
       "gen_directory": "../../../../bmp580_eeprom_spi.gen/sources_1/bd/top_lvl_design",
       "name": "top_lvl_design",
@@ -12,7 +12,9 @@
     },
     "design_tree": {
       "led_control_0": "",
-      "switch_control_0": ""
+      "switch_control_0": "",
+      "SPI_master_cs_0": "",
+      "bmp580_control_0": ""
     },
     "ports": {
       "SW3": {
@@ -44,6 +46,35 @@
         }
       },
       "LD2": {
+        "direction": "O"
+      },
+      "my_MISO": {
+        "direction": "I"
+      },
+      "my_MOSI": {
+        "direction": "O"
+      },
+      "my_SCK": {
+        "direction": "O",
+        "parameters": {
+          "CLK_DOMAIN": {
+            "value": "top_lvl_design_SPI_master_cs_0_0_spi_clk",
+            "value_src": "default_prop"
+          },
+          "FREQ_HZ": {
+            "value": "100000000",
+            "value_src": "default_prop"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default_prop"
+          }
+        }
+      },
+      "LD3": {
+        "direction": "O"
+      },
+      "my_CS1": {
         "direction": "O"
       }
     },
@@ -123,6 +154,160 @@
             "direction": "O"
           }
         }
+      },
+      "SPI_master_cs_0": {
+        "vlnv": "xilinx.com:module_ref:SPI_master_cs:1.0",
+        "ip_revision": "1",
+        "xci_name": "top_lvl_design_SPI_master_cs_0_0",
+        "xci_path": "ip\\top_lvl_design_SPI_master_cs_0_0\\top_lvl_design_SPI_master_cs_0_0.xci",
+        "inst_hier_path": "SPI_master_cs_0",
+        "has_run_ip_tcl": "true",
+        "parameters": {
+          "CLKS_PER_HALF_BIT": {
+            "value": "20"
+          },
+          "MAX_BYTES_PER_CS": {
+            "value": "16"
+          }
+        },
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "SPI_master_cs",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "rst_l": {
+            "direction": "I"
+          },
+          "clk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "user_prop"
+              },
+              "CLK_DOMAIN": {
+                "value": "top_lvl_design_CLK100MHZ",
+                "value_src": "default_prop"
+              }
+            }
+          },
+          "tx_count": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "tx_byte": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "tx_data_valid": {
+            "direction": "I"
+          },
+          "tx_ready": {
+            "direction": "O"
+          },
+          "rx_count": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "rx_data_valid": {
+            "direction": "O"
+          },
+          "rx_byte": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "spi_clk": {
+            "type": "clk",
+            "direction": "O"
+          },
+          "spi_miso": {
+            "direction": "I"
+          },
+          "spi_mosi": {
+            "direction": "O"
+          },
+          "spi_cs_n": {
+            "direction": "O"
+          }
+        }
+      },
+      "bmp580_control_0": {
+        "vlnv": "xilinx.com:module_ref:bmp580_control:1.0",
+        "ip_revision": "1",
+        "xci_name": "top_lvl_design_bmp580_control_0_0",
+        "xci_path": "ip\\top_lvl_design_bmp580_control_0_0\\top_lvl_design_bmp580_control_0_0.xci",
+        "inst_hier_path": "bmp580_control_0",
+        "has_run_ip_tcl": "true",
+        "reference_info": {
+          "ref_type": "hdl",
+          "ref_name": "bmp580_control",
+          "boundary_crc": "0x0"
+        },
+        "ports": {
+          "clk": {
+            "type": "clk",
+            "direction": "I",
+            "parameters": {
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "user_prop"
+              },
+              "CLK_DOMAIN": {
+                "value": "top_lvl_design_CLK100MHZ",
+                "value_src": "default_prop"
+              }
+            }
+          },
+          "rst_l": {
+            "direction": "I"
+          },
+          "tx_ready": {
+            "direction": "I"
+          },
+          "rx_count": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "rx_data_valid": {
+            "direction": "I"
+          },
+          "rx_byte": {
+            "direction": "I",
+            "left": "7",
+            "right": "0"
+          },
+          "tx_count": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "tx_byte": {
+            "direction": "O",
+            "left": "7",
+            "right": "0"
+          },
+          "tx_data_valid": {
+            "direction": "O"
+          },
+          "temp_data_valid": {
+            "direction": "O"
+          },
+          "temp_raw_data": {
+            "direction": "O",
+            "left": "23",
+            "right": "0"
+          },
+          "test_ok": {
+            "direction": "O"
+          }
+        }
       }
     },
     "nets": {
@@ -130,7 +315,51 @@
         "ports": [
           "CLK100MHZ",
           "switch_control_0/clk",
-          "led_control_0/clk"
+          "led_control_0/clk",
+          "SPI_master_cs_0/clk",
+          "bmp580_control_0/clk"
+        ]
+      },
+      "SPI_master_cs_0_rx_byte": {
+        "ports": [
+          "SPI_master_cs_0/rx_byte",
+          "bmp580_control_0/rx_byte"
+        ]
+      },
+      "SPI_master_cs_0_rx_count": {
+        "ports": [
+          "SPI_master_cs_0/rx_count",
+          "bmp580_control_0/rx_count"
+        ]
+      },
+      "SPI_master_cs_0_rx_data_valid": {
+        "ports": [
+          "SPI_master_cs_0/rx_data_valid",
+          "bmp580_control_0/rx_data_valid"
+        ]
+      },
+      "SPI_master_cs_0_spi_clk": {
+        "ports": [
+          "SPI_master_cs_0/spi_clk",
+          "my_SCK"
+        ]
+      },
+      "SPI_master_cs_0_spi_cs_n": {
+        "ports": [
+          "SPI_master_cs_0/spi_cs_n",
+          "my_CS1"
+        ]
+      },
+      "SPI_master_cs_0_spi_mosi": {
+        "ports": [
+          "SPI_master_cs_0/spi_mosi",
+          "my_MOSI"
+        ]
+      },
+      "SPI_master_cs_0_tx_ready": {
+        "ports": [
+          "SPI_master_cs_0/tx_ready",
+          "bmp580_control_0/tx_ready"
         ]
       },
       "SW3_1": {
@@ -139,16 +368,48 @@
           "switch_control_0/switch_input"
         ]
       },
+      "bmp580_control_0_test_ok": {
+        "ports": [
+          "bmp580_control_0/test_ok",
+          "LD3"
+        ]
+      },
+      "bmp580_control_0_tx_byte": {
+        "ports": [
+          "bmp580_control_0/tx_byte",
+          "SPI_master_cs_0/tx_byte"
+        ]
+      },
+      "bmp580_control_0_tx_count": {
+        "ports": [
+          "bmp580_control_0/tx_count",
+          "SPI_master_cs_0/tx_count"
+        ]
+      },
+      "bmp580_control_0_tx_data_valid": {
+        "ports": [
+          "bmp580_control_0/tx_data_valid",
+          "SPI_master_cs_0/tx_data_valid"
+        ]
+      },
       "led_control_0_led_ctrl": {
         "ports": [
           "led_control_0/led_ctrl",
           "LD2"
         ]
       },
+      "my_MISO_1": {
+        "ports": [
+          "my_MISO",
+          "SPI_master_cs_0/spi_miso"
+        ]
+      },
       "switch_control_0_rst_l": {
         "ports": [
           "switch_control_0/rst_l",
-          "led_control_0/rst_l"
+          "led_control_0/rst_l",
+          "SPI_master_cs_0/rst_l",
+          "bmp580_control_0/rst_l"
         ]
       },
       "switch_control_0_start": {

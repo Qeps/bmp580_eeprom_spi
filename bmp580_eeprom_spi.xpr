@@ -101,11 +101,8 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/imports/new/spi_master.vhd">
+      <File Path="$PSRCDIR/sources_1/new/led_control.vhd">
         <FileInfo>
-          <Attr Name="AutoDisabled" Val="1"/>
-          <Attr Name="ImportPath" Val="$PPRDIR/../bmp_580_flash_w25q128_spi/bmp_580_flash_w25q128_spi.srcs/sources_1/new/spi_master.vhd"/>
-          <Attr Name="ImportTime" Val="1771880355"/>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
@@ -116,7 +113,21 @@
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
       </File>
-      <File Path="$PSRCDIR/sources_1/new/led_control.vhd">
+      <File Path="$PSRCDIR/sources_1/imports/new/spi_master.vhd">
+        <FileInfo>
+          <Attr Name="ImportPath" Val="$PPRDIR/../bmp_580_flash_w25q128_spi/bmp_580_flash_w25q128_spi.srcs/sources_1/new/spi_master.vhd"/>
+          <Attr Name="ImportTime" Val="1771880355"/>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/new/SPI_master_cs.vhd">
+        <FileInfo>
+          <Attr Name="UsedIn" Val="synthesis"/>
+          <Attr Name="UsedIn" Val="simulation"/>
+        </FileInfo>
+      </File>
+      <File Path="$PSRCDIR/sources_1/new/bmp580_control.vhd">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
           <Attr Name="UsedIn" Val="simulation"/>
@@ -128,6 +139,12 @@
           <Attr Name="UsedIn" Val="implementation"/>
           <Attr Name="UsedIn" Val="simulation"/>
         </FileInfo>
+        <CompFileExtendedInfo CompFileName="top_lvl_design.bd" FileRelPathName="ip\top_lvl_design_SPI_master_cs_0_0\top_lvl_design_SPI_master_cs_0_0.xci">
+          <Proxy FileSetName="top_lvl_design_SPI_master_cs_0_0"/>
+        </CompFileExtendedInfo>
+        <CompFileExtendedInfo CompFileName="top_lvl_design.bd" FileRelPathName="ip\top_lvl_design_bmp580_control_0_0\top_lvl_design_bmp580_control_0_0.xci">
+          <Proxy FileSetName="top_lvl_design_bmp580_control_0_0"/>
+        </CompFileExtendedInfo>
         <CompFileExtendedInfo CompFileName="top_lvl_design.bd" FileRelPathName="ip\top_lvl_design_led_control_0_0\top_lvl_design_led_control_0_0.xci">
           <Proxy FileSetName="top_lvl_design_led_control_0_0"/>
         </CompFileExtendedInfo>
@@ -162,6 +179,7 @@
       </Config>
     </FileSet>
     <FileSet Name="sim_1" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/sim_1" RelGenDir="$PGENDIR/sim_1">
+      <Filter Type="Srcs"/>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
         <Option Name="TopModule" Val="top_lvl_design_wrapper"/>
@@ -215,6 +233,18 @@
         <Option Name="UseBlackboxStub" Val="1"/>
       </Config>
     </FileSet>
+    <FileSet Name="top_lvl_design_SPI_master_cs_0_0" Type="BlockSrcs" RelSrcDir="$PSRCDIR/top_lvl_design_SPI_master_cs_0_0" RelGenDir="$PGENDIR/top_lvl_design_SPI_master_cs_0_0">
+      <Config>
+        <Option Name="TopModule" Val="top_lvl_design_SPI_master_cs_0_0"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
+    <FileSet Name="top_lvl_design_bmp580_control_0_0" Type="BlockSrcs" RelSrcDir="$PSRCDIR/top_lvl_design_bmp580_control_0_0" RelGenDir="$PGENDIR/top_lvl_design_bmp580_control_0_0">
+      <Config>
+        <Option Name="TopModule" Val="top_lvl_design_bmp580_control_0_0"/>
+        <Option Name="UseBlackboxStub" Val="1"/>
+      </Config>
+    </FileSet>
   </FileSets>
   <Simulators>
     <Simulator Name="XSim">
@@ -237,9 +267,7 @@
   <Runs Version="1" Minor="22">
     <Run Id="synth_1" Type="Ft3:Synth" SrcSet="sources_1" Part="xc7s25csga324-1" ConstrsSet="constrs_1" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="true" IncrementalCheckpoint="$PSRCDIR/utils_1/imports/synth_1/top_lvl_design_wrapper.dcp" WriteIncrSynthDcp="false" State="current" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2025">
-          <Desc>Vivado Synthesis Defaults</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2025"/>
         <Step Id="synth_design"/>
       </Strategy>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2025"/>
@@ -248,9 +276,7 @@
     </Run>
     <Run Id="top_lvl_design_switch_control_0_1_synth_1" Type="Ft3:Synth" SrcSet="top_lvl_design_switch_control_0_1" Part="xc7s25csga324-1" ConstrsSet="top_lvl_design_switch_control_0_1" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/top_lvl_design_switch_control_0_1_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/top_lvl_design_switch_control_0_1_synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2025">
-          <Desc>Vivado Synthesis Defaults</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2025"/>
         <Step Id="synth_design"/>
       </Strategy>
       <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2025"/>
@@ -258,6 +284,24 @@
       <RQSFiles/>
     </Run>
     <Run Id="top_lvl_design_led_control_0_0_synth_1" Type="Ft3:Synth" SrcSet="top_lvl_design_led_control_0_0" Part="xc7s25csga324-1" ConstrsSet="top_lvl_design_led_control_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/top_lvl_design_led_control_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/top_lvl_design_led_control_0_0_synth_1" ParallelReportGen="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2025"/>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2025"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="top_lvl_design_SPI_master_cs_0_0_synth_1" Type="Ft3:Synth" SrcSet="top_lvl_design_SPI_master_cs_0_0" Part="xc7s25csga324-1" ConstrsSet="top_lvl_design_SPI_master_cs_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/top_lvl_design_SPI_master_cs_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/top_lvl_design_SPI_master_cs_0_0_synth_1" ParallelReportGen="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2025"/>
+        <Step Id="synth_design"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Synthesis Default Reports" Flow="Vivado Synthesis 2025"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="top_lvl_design_bmp580_control_0_0_synth_1" Type="Ft3:Synth" SrcSet="top_lvl_design_bmp580_control_0_0" Part="xc7s25csga324-1" ConstrsSet="top_lvl_design_bmp580_control_0_0" Description="Vivado Synthesis Defaults" AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" IncludeInArchive="true" IsChild="false" AutoIncrementalDir="$PSRCDIR/utils_1/imports/top_lvl_design_bmp580_control_0_0_synth_1" AutoRQSDir="$PSRCDIR/utils_1/imports/top_lvl_design_bmp580_control_0_0_synth_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Synthesis Defaults" Flow="Vivado Synthesis 2025">
           <Desc>Vivado Synthesis Defaults</Desc>
@@ -270,9 +314,7 @@
     </Run>
     <Run Id="impl_1" Type="Ft2:EntireDesign" Part="xc7s25csga324-1" ConstrsSet="constrs_1" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" State="current" SynthRun="synth_1" IncludeInArchive="true" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/impl_1" LaunchOptions="-jobs 8 " AutoRQSDir="$PSRCDIR/utils_1/imports/impl_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2025">
-          <Desc>Default settings for Implementation.</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2025"/>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>
@@ -289,9 +331,7 @@
     </Run>
     <Run Id="top_lvl_design_switch_control_0_1_impl_1" Type="Ft2:EntireDesign" Part="xc7s25csga324-1" ConstrsSet="top_lvl_design_switch_control_0_1" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="top_lvl_design_switch_control_0_1_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/top_lvl_design_switch_control_0_1_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/top_lvl_design_switch_control_0_1_impl_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
-        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2025">
-          <Desc>Default settings for Implementation.</Desc>
-        </StratHandle>
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2025"/>
         <Step Id="init_design"/>
         <Step Id="opt_design"/>
         <Step Id="power_opt_design"/>
@@ -307,6 +347,40 @@
       <RQSFiles/>
     </Run>
     <Run Id="top_lvl_design_led_control_0_0_impl_1" Type="Ft2:EntireDesign" Part="xc7s25csga324-1" ConstrsSet="top_lvl_design_led_control_0_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="top_lvl_design_led_control_0_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/top_lvl_design_led_control_0_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/top_lvl_design_led_control_0_0_impl_1" ParallelReportGen="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2025"/>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2025"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="top_lvl_design_SPI_master_cs_0_0_impl_1" Type="Ft2:EntireDesign" Part="xc7s25csga324-1" ConstrsSet="top_lvl_design_SPI_master_cs_0_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="top_lvl_design_SPI_master_cs_0_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/top_lvl_design_SPI_master_cs_0_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/top_lvl_design_SPI_master_cs_0_0_impl_1" ParallelReportGen="true">
+      <Strategy Version="1" Minor="2">
+        <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2025"/>
+        <Step Id="init_design"/>
+        <Step Id="opt_design"/>
+        <Step Id="power_opt_design"/>
+        <Step Id="place_design"/>
+        <Step Id="post_place_power_opt_design"/>
+        <Step Id="phys_opt_design"/>
+        <Step Id="route_design"/>
+        <Step Id="post_route_phys_opt_design"/>
+        <Step Id="write_bitstream"/>
+      </Strategy>
+      <ReportStrategy Name="Vivado Implementation Default Reports" Flow="Vivado Implementation 2025"/>
+      <Report Name="ROUTE_DESIGN.REPORT_METHODOLOGY" Enabled="1"/>
+      <RQSFiles/>
+    </Run>
+    <Run Id="top_lvl_design_bmp580_control_0_0_impl_1" Type="Ft2:EntireDesign" Part="xc7s25csga324-1" ConstrsSet="top_lvl_design_bmp580_control_0_0" Description="Default settings for Implementation." AutoIncrementalCheckpoint="false" WriteIncrSynthDcp="false" SynthRun="top_lvl_design_bmp580_control_0_0_synth_1" IncludeInArchive="false" IsChild="false" GenFullBitstream="true" AutoIncrementalDir="$PSRCDIR/utils_1/imports/top_lvl_design_bmp580_control_0_0_impl_1" AutoRQSDir="$PSRCDIR/utils_1/imports/top_lvl_design_bmp580_control_0_0_impl_1" ParallelReportGen="true">
       <Strategy Version="1" Minor="2">
         <StratHandle Name="Vivado Implementation Defaults" Flow="Vivado Implementation 2025">
           <Desc>Default settings for Implementation.</Desc>
