@@ -29,6 +29,7 @@ architecture rtl of bmp580_control is
     constant READ_DATA         : std_logic_vector(7 downto 0) := x"80";
     constant CHIP_ID_ADDR      : std_logic_vector(7 downto 0) := x"01"; -- reset value: x"50"
     constant STATUS_ADDR       : std_logic_vector(7 downto 0) := x"28"; -- reset value: x"02"
+    constant INT_STATUS        : std_logic_vector(7 downto 0) := x"28"; -- reset value: x"00"
     constant INIT_DELAY_CYCLES : integer := 200000; -- 2 ms @ 100 MHz
 
     type state_t is (
@@ -42,7 +43,7 @@ architecture rtl of bmp580_control is
         INIT_SEND_DUMMY2,
         INIT_WAIT_DUMMY2_RX,
 
-        -- 3. Recomemended steps:
+        -- 3. Recomemended steps AFTER power up - doc. 4.3.9:
         --      a) Read out the CHIP_ID register and check that it is not all 0
         READ_SEND_CHIP_ID_ADDR,
         READ_WAIT_CHIP_ID_ADDR_RX,
@@ -53,6 +54,13 @@ architecture rtl of bmp580_control is
         READ_WAIT_STATUS_ADDR_RX,
         READ_SEND_STATUS_DUMMY,
         READ_WAIT_STATUS_DATA_RX
+        --      c) Read out the INT_STATUS.por register field and check that it is set to 1; that means INT_STATUS == 0x01
+        -- READ_SEND_INT_STATUS_ADDR,
+        -- READ_WAIT_INT_STATUS_ADDR_RX,
+        -- READ_SEND_INT_STATUS_DUMMY,
+        -- READ_WAIT_INT_STATUS_DATA_RX
+
+        -- 4. Set mode to STANDBY - some registers cannot be changed in other modes - doc. 4.3.7 and 4.3.8
     );
 
     signal state               : state_t := IDLE;
@@ -62,7 +70,7 @@ architecture rtl of bmp580_control is
     signal temp_data_valid_reg : std_logic := '0';
     signal temp_raw_data_reg   : std_logic_vector(23 downto 0) := (others => '0');
     signal init_delay_cnt      : unsigned(17 downto 0) := (others => '0');
-    signal spi_ready_reg         : std_logic := '0';
+    signal spi_ready_reg       : std_logic := '0';
 begin
     spi_ready       <= spi_ready_reg;
     tx_count        <= tx_count_reg;
@@ -81,7 +89,7 @@ begin
                 temp_data_valid_reg <= '0';
                 temp_raw_data_reg   <= (others => '0');
                 init_delay_cnt      <= (others => '0');
-                spi_ready_reg         <= '0';
+                spi_ready_reg       <= '0';
                 state               <= IDLE;
             else
                 tx_data_valid_reg   <= '0';
@@ -93,7 +101,7 @@ begin
                         tx_byte_reg       <= (others => '0');
                         temp_raw_data_reg <= (others => '0');
                         init_delay_cnt    <= (others => '0');
-                        spi_ready_reg       <= '0';
+                        spi_ready_reg     <= '0';
                         state             <= WAIT_INIT_2MS;
 
                     when WAIT_INIT_2MS =>
@@ -105,7 +113,7 @@ begin
                         end if;
 
                     -- Force BMP580 to SPI mode by two dummy bytes under one CS
-                    when INIT_SEND_DUMMY1 => -- create one state for managing dummy bytes and wait in future
+                    when INIT_SEND_DUMMY1 =>
                         if tx_ready = '1' then
                             tx_count_reg      <= x"02";
                             tx_byte_reg       <= DUMMY_BYTE;
@@ -118,7 +126,7 @@ begin
                             state <= INIT_SEND_DUMMY2;
                         end if;
 
-                    when INIT_SEND_DUMMY2 => -- create one state for managing dummy bytes and wait in future
+                    when INIT_SEND_DUMMY2 =>
                         if tx_ready = '1' then
                             tx_byte_reg       <= DUMMY_BYTE;
                             tx_data_valid_reg <= '1';
@@ -144,7 +152,7 @@ begin
                             state <= READ_SEND_CHIP_ID_DUMMY;
                         end if;
 
-                    when READ_SEND_CHIP_ID_DUMMY => -- create one state for managing dummy bytes and wait in future
+                    when READ_SEND_CHIP_ID_DUMMY =>
                         if tx_ready = '1' then
                             tx_byte_reg       <= DUMMY_BYTE;
                             tx_data_valid_reg <= '1';
@@ -175,7 +183,7 @@ begin
                             state <= READ_SEND_STATUS_DUMMY;
                         end if;
                     
-                    when READ_SEND_STATUS_DUMMY => -- create one state for managing dummy bytes and wait in future
+                    when READ_SEND_STATUS_DUMMY =>
                         if tx_ready = '1' then
                             tx_byte_reg       <= DUMMY_BYTE;
                             tx_data_valid_reg <= '1';
