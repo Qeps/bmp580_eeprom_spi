@@ -174,7 +174,7 @@ begin
                     when READ_WAIT_CHIP_ID_DATA_RX =>
                         if rx_data_valid = '1' then
                             if rx_byte = x"50" then
-                                -- spi_ready_reg <= '1';
+                                -- spi_ready_reg <= '1'; -- UNCOMMENT
                                 state         <= READ_SEND_STATUS_ADDR;
                             else
                                 state <= IDLE;
@@ -201,9 +201,9 @@ begin
                     when READ_WAIT_STATUS_DATA_RX =>
                         if rx_data_valid = '1' then
                             if rx_byte(2 downto 1) = "01" then
-                                spi_ready_reg <= '1';
+                                spi_ready_reg <= '1'; -- delete
                             else
-                                spi_ready_reg <= '1';
+                                spi_ready_reg <= '0'; -- delete
                             end if;
                         end if;
 
