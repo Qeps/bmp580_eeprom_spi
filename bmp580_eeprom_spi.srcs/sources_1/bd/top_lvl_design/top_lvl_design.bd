@@ -304,7 +304,7 @@
             "left": "23",
             "right": "0"
           },
-          "test_ok": {
+          "spi_ready": {
             "direction": "O"
           }
         }
@@ -370,7 +370,7 @@
       },
       "bmp580_control_0_test_ok": {
         "ports": [
-          "bmp580_control_0/test_ok",
+          "bmp580_control_0/spi_ready",
           "LD3"
         ]
       },
