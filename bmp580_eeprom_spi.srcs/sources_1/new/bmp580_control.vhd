@@ -27,9 +27,13 @@ end bmp580_control;
 architecture rtl of bmp580_control is
     constant DUMMY_BYTE           : std_logic_vector(7 downto 0) := x"00";
     constant READ_DATA            : std_logic_vector(7 downto 0) := x"80";
+
     constant CHIP_ID_ADDR         : std_logic_vector(7 downto 0) := x"01"; -- reset value: x"50"
+
     constant STATUS_ADDR          : std_logic_vector(7 downto 0) := x"28"; -- reset value: x"02"
+
     constant INT_STATUS_ADDR      : std_logic_vector(7 downto 0) := x"27"; -- reset value: x"00"
+
     constant ODR_CONFIG_ADDR      : std_logic_vector(7 downto 0) := x"37"; -- reset value: x"70"
     constant DEEP_DIS_DEFAULT     : std_logic                    := '0';
     constant ODR_DEFAULT          : std_logic_vector(4 downto 0) := "11100";
@@ -37,8 +41,26 @@ architecture rtl of bmp580_control is
     constant PWR_NORMAL           : std_logic_vector(1 downto 0) := "01";
     constant CFG_STANDBY          : std_logic_vector(7 downto 0) := DEEP_DIS_DEFAULT & ODR_DEFAULT & PWR_STANDBY; -- x"70"
     constant CFG_NORMAL           : std_logic_vector(7 downto 0) := DEEP_DIS_DEFAULT & ODR_DEFAULT & PWR_NORMAL;  -- x"71"
+
+    constant OSR_CONFIG_ADDR      : std_logic_vector(7 downto 0) := x"36";
+    constant RSVD7_ZERO           : std_logic := '0';
+    constant PRESS_DISABLE        : std_logic := '0';
+    constant PRESS_ENABLE         : std_logic := '1';
+    constant OSR_1X               : std_logic_vector(2 downto 0) := "000";
+    constant OSR_2X               : std_logic_vector(2 downto 0) := "001";
+    constant OSR_4X               : std_logic_vector(2 downto 0) := "010";
+    constant OSR_8X               : std_logic_vector(2 downto 0) := "011";
+    constant OSR_16X              : std_logic_vector(2 downto 0) := "100";
+    constant OSR_32X              : std_logic_vector(2 downto 0) := "101";
+    constant OSR_64X              : std_logic_vector(2 downto 0) := "110";
+    constant OSR_128X             : std_logic_vector(2 downto 0) := "111";
+    constant CFG_OSR_TEMP_ONLY    : std_logic_vector(7 downto 0) := RSVD7_ZERO & PRESS_DISABLE & OSR_1X & OSR_8X; -- x"03" Temp only: osr_t=8x, press_en=0
+    constant CFG_OSR_PT_8X        : std_logic_vector(7 downto 0) := RSVD7_ZERO & PRESS_ENABLE & OSR_8X & OSR_8X;  -- x"5B"
+
+
     constant INIT_DELAY_CYCLES    : integer                      := 200000; -- 2   ms @ 100 MHz
     constant STANDBY_DELAY_CYCLES : integer                      := 250000; -- 2.5 ms @ 100 MHz
+    constant NORMAL_DELAY_CYCLES  : integer                      := 400000; -- 4   ms @ 100 MHz
 
     type rx_wait_ctx_t is (
         NONE,
@@ -48,7 +70,9 @@ architecture rtl of bmp580_control is
         READ_WAIT_STATUS_ADDR_RX,
         READ_WAIT_INT_STATUS_ADDR_RX,
         SET_SEND_ODR_CONFIG_ADDR_RX,
-        READ_WAIT_ODR_CONFIG_ADDR_RX
+        READ_WAIT_ODR_CONFIG_ADDR_RX,
+        SET_SEND_OSR_CONFIG_ADDR_RX,
+        SET_SEND_ODR_CONFIG_ADDR_RX2
     );
 
     type state_t is (
@@ -88,7 +112,18 @@ architecture rtl of bmp580_control is
         WAIT_T_STANDBY_MS,
         READ_SEND_ODR_CONFIG_ADDR,
         READ_SEND_ODR_CONFIG_DUMMY,
-        READ_WAIT_ODR_CONFIG_DATA_RX
+        READ_WAIT_ODR_CONFIG_DATA_RX,
+
+        -- 5. Set OSR first and ODR to normal mode for proper oversampling handle
+        --      a) OSR - (0x36 = 0x03 (press_en=0, osr_t=8x))
+        SET_SEND_OSR_CONFIG_ADDR,
+        SET_SEND_OSR_CONFIG_DATA,
+        --      b) ODR - (deep_dis=0, odr=1Hz, pwr_mode=01)
+        SET_SEND_ODR_CONFIG_ADDR2, -- send odr register addr once again
+        SET_SEND_ODR_CONFIG_DATA2, -- send odr register data to match OSR CONFIG
+        WAIT_T_NORMAL_MS           -- wait treconf_deep 4ms - doc. Electrical characteristics
+
+        -- 6. READ OSR and ODR registers to confirm correct configuratation
     );
 
     signal state               : state_t                       := IDLE;
@@ -100,6 +135,7 @@ architecture rtl of bmp580_control is
     signal temp_raw_data_reg   : std_logic_vector(23 downto 0) := (others => '0');
     signal init_delay_cnt      : unsigned(17 downto 0)         := (others => '0');
     signal standby_delay_cnt   : unsigned(17 downto 0)         := (others => '0');
+    signal normal_delay_cnt    : unsigned(17 downto 0)         := (others => '0');
     signal spi_ready_reg       : std_logic                     := '0';
 begin
     spi_ready       <= spi_ready_reg;
@@ -118,6 +154,8 @@ begin
                 tx_data_valid_reg   <= '0';
                 temp_data_valid_reg <= '0';
                 temp_raw_data_reg   <= (others => '0');
+                standby_delay_cnt   <= (others => '0');
+                normal_delay_cnt    <= (others => '0');
                 init_delay_cnt      <= (others => '0');
                 spi_ready_reg       <= '0';
                 state               <= IDLE;
@@ -130,6 +168,8 @@ begin
                         tx_count_reg      <= (others => '0');
                         tx_byte_reg       <= (others => '0');
                         temp_raw_data_reg <= (others => '0');
+                        standby_delay_cnt <= (others => '0');
+                        normal_delay_cnt  <= (others => '0');
                         init_delay_cnt    <= (others => '0');
                         rx_wait_ctx       <= NONE;
                         spi_ready_reg     <= '0';
@@ -158,6 +198,12 @@ begin
                                 
                                 when READ_WAIT_ODR_CONFIG_ADDR_RX =>
                                     state <= READ_SEND_ODR_CONFIG_DUMMY;
+                                
+                                when SET_SEND_OSR_CONFIG_ADDR_RX =>
+                                    state <= SET_SEND_OSR_CONFIG_DATA;
+
+                                when SET_SEND_ODR_CONFIG_ADDR_RX2=>
+                                    state <= SET_SEND_ODR_CONFIG_DATA2;
 
                                 when OTHERS =>
                                     state <= IDLE;
@@ -314,11 +360,52 @@ begin
                     when READ_WAIT_ODR_CONFIG_DATA_RX =>
                         if rx_data_valid = '1' then
                             if rx_byte = CFG_STANDBY then
-                                spi_ready_reg <= '1';
+                                state <= SET_SEND_OSR_CONFIG_ADDR;
                             else
-                                spi_ready_reg <= '0';
+                                state <= IDLE;
                             end if;
                         end if; 
+                    
+                    -- 5.
+                    when SET_SEND_OSR_CONFIG_ADDR =>
+                        if tx_ready = '1' then
+                            tx_count_reg      <= x"02";
+                            tx_byte_reg       <= OSR_CONFIG_ADDR;
+                            tx_data_valid_reg <= '1';
+                            rx_wait_ctx       <= SET_SEND_OSR_CONFIG_ADDR_RX;
+                            state             <= WAIT_RX;
+                        end if;
+                    
+                    when SET_SEND_OSR_CONFIG_DATA =>
+                        if tx_ready = '1' then
+                            tx_byte_reg       <= CFG_OSR_TEMP_ONLY;
+                            tx_data_valid_reg <= '1';
+                            state             <= SET_SEND_ODR_CONFIG_ADDR2;
+                        end if;
+
+                    when SET_SEND_ODR_CONFIG_ADDR2 =>
+                        if tx_ready = '1' then
+                            tx_count_reg      <= x"02";
+                            tx_byte_reg       <= ODR_CONFIG_ADDR;
+                            tx_data_valid_reg <= '1';
+                            rx_wait_ctx       <= SET_SEND_ODR_CONFIG_ADDR_RX2;
+                            state             <= WAIT_RX;
+                        end if;
+                    
+                    when SET_SEND_ODR_CONFIG_DATA2 =>
+                        if tx_ready = '1' then
+                            tx_byte_reg       <= CFG_NORMAL;
+                            tx_data_valid_reg <= '1';
+                            state             <= WAIT_T_NORMAL_MS;
+                        end if;
+
+                    when WAIT_T_NORMAL_MS =>
+                        if normal_delay_cnt < to_unsigned(NORMAL_DELAY_CYCLES - 1, normal_delay_cnt'length) then
+                            normal_delay_cnt <= normal_delay_cnt + 1;
+                        else
+                            normal_delay_cnt <= (others => '0');
+                            state            <= IDLE;
+                        end if;
 
                     when OTHERS =>
                         tx_count_reg        <= (others => '0');
