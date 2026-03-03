@@ -251,7 +251,7 @@
         </spirit:wire>
       </spirit:port>
       <spirit:port>
-        <spirit:name>spi_ready</spirit:name>
+        <spirit:name>spi_debug</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:wireTypeDefs>
